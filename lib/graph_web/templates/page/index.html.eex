@@ -1,0 +1,43 @@
+<div class="row marketing">
+  <h2>GraphQL Data</h2>
+  <p>Loading data from:</p>
+  <code>
+    # localhost:4000/graphiql?query={posts{id,title}}
+  </code>
+  <hr>
+  <div id="graphqlData"></div>
+</div>
+
+<script type="text/javascript">
+  const targetDom = document.querySelector('#graphqlData');
+
+  function setData(dataString){
+    targetDom.innerText = dataString;
+  }
+
+  function renderPosts(posts){
+    console.info('Rendering ' + posts.length   + ' posts')
+    let postString = posts.map(post => {
+      let row = 'Title: ' + post.title + '\n'
+      row += 'Description: ' + post.description + '\n\n'
+      return row
+    })
+
+    setData(postString)
+  }
+
+  // Fetch data from GraphQL
+  let headers = new window.Headers({
+    'Content-Type': 'application/graphql',
+  })
+  let query = '{posts{id}}'
+  let q = window.encodeURIComponent(query)
+  fetch('/graphiql?query={posts{id,title,description,body}}')
+    .then(res => res.json())
+    .then(res => renderPosts(res.data.posts))
+    .catch(err => console.error('Error fetching data: \n' + err));
+
+  // Display a loading message
+  setData('loading...');
+
+</script>
